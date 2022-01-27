@@ -10,33 +10,37 @@ services:
       - 27017:27017
     networks:
       leafnet:
-        ipv4_address: 172.29.0.1
+        ipv4_address: 172.29.0.2
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=eddie
+      - MONGO_INITDB_ROOT_PASSWORD=password
+      - MONGO_INITDB_DATABASE=tea
 
-  # api:
-  #    restart: unless-stopped
-  #    build:
-  #      context: ./producer-block
-  #      dockerfile: Dockerfile-producer
-  #    ports:
-  #     - "3000"
-  #    depends_on:
-  #     - kafka
-  #    networks:
-  #      leafnet:
-  #       ipv4_address: 172.29.0.2
+  api:
+     restart: unless-stopped
+     build:
+       context: ./api
+       dockerfile: Dockerfile-api
+     ports:
+      - 3000:3000
+     depends_on:
+      - mongodb
+     networks:
+       leafnet:
+        ipv4_address: 172.29.0.3
 
-  # frontend:
-  #    restart: unless-stopped
-  #    build:
-  #      context: ./frontend
-  #      dockerfile: Dockerfile-frontend
-  #    ports:
-  #     - "8080"
-  #    depends_on:
-  #     - api
-  #    networks:
-  #      leafnet:
-  #       ipv4_address: 172.29.0.3
+  frontend:
+     restart: unless-stopped
+     build:
+       context: ./frontend
+       dockerfile: Dockerfile-frontend
+     ports:
+      - 8080:8080
+     depends_on:
+      - api
+     networks:
+       leafnet:
+        ipv4_address: 172.29.0.4
   
 networks:
   leafnet:
