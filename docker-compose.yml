@@ -8,11 +8,11 @@ services:
       - ./persistentstore:/data/db
     ports:
       - 27017:27017
-    networks:
-      leafnet:
-        ipv4_address: 172.29.0.2
     environment:
       - MONGO_INITDB_DATABASE=tea
+    # networks:
+    #   leafnet:
+    #     ipv4_address: 172.29.0.2
 
   api:
      restart: unless-stopped
@@ -23,27 +23,27 @@ services:
       - 3000:3000
      depends_on:
       - mongodb
-     networks:
-       leafnet:
-        ipv4_address: 172.29.0.3
+    #  networks:
+    #    leafnet:
+    #     ipv4_address: 172.29.0.3
 
-  # frontend:
-  #    restart: unless-stopped
-  #    build:
-  #      context: ./frontend
-  #      dockerfile: Dockerfile-frontend
-  #    ports:
-  #     - 8080:8080
-  #    depends_on:
-  #     - api
-  #    networks:
-  #      leafnet:
-  #       ipv4_address: 172.29.0.4
+  frontend:
+     restart: unless-stopped
+     build:
+       context: ./frontend
+       dockerfile: Dockerfile-frontend
+     ports:
+      - 8080:8080
+     depends_on:
+      - api
+    #  networks:
+    #    leafnet:
+    #     ipv4_address: 172.29.0.4
   
-networks:
-  leafnet:
-    ipam:
-      driver: default
-      config:
-      -
-        subnet: 172.29.0.0/16
+# networks:
+#   leafnet:
+#     ipam:
+#       driver: default
+#       config:
+#       -
+#         subnet: 172.29.0.0/16
