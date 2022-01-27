@@ -1,6 +1,6 @@
 <template>
   <div v-if="lastFiveLoaded">
-    {{lastFive}}
+    These are the last five teas: {{lastFive}}
   </div>
 </template>
 
@@ -23,7 +23,7 @@ export default {
   },
   methods: {
     async getLastFiveReviews () {
-      let data = await fetch('http://api:3000/lastFive')
+      let data = await fetch('http://localhost:3000/lastFive')
       return data
     }
   },

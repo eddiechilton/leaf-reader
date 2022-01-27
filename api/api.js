@@ -1,16 +1,16 @@
 const express = require('express')
 const cors = require('cors')
+const bodyParser= require('body-parser')
 const MongoClient = require('mongodb').MongoClient;
 
-const port = 3000
 const app = express()
 app.use(cors())
-const uri = "mongodb://mongodb";
+app.use(express.json());
 var isConnected = false;
 var conn;
 
 async function connectToMongodb() {
-        await MongoClient.connect(uri, {useNewUrlParser: true},(err, client) => {
+        await MongoClient.connect("mongodb://mongodb", {useNewUrlParser: true},(err, client) => {
             if (err) { console.log(err) }
             else {
                 isConnected = true
@@ -26,27 +26,55 @@ async function connectToMongodb() {
         )
 }
 
-async function getATea() {
-    let teas = await conn.collection('teas').findOne({})
+async function getLastFive() {
+    let teas = await conn.collection('teas').find({}).limit(5).toArray()
     return teas
 }
-async function addTea() {
-    let teas = await conn.collection('teas').insertOne({name:'eddie',tea:'puerh'})
+async function getMyTeas(reqBody) {
+    let teas = await conn.collection('teas').find({user: reqBody.user}).toArray()
+    return teas
+}
+async function addTea(reqBody) {
+    console.log(2,reqBody)
+    let teas = await conn.collection('teas').insertOne(
+        {
+            user:reqBody.user,
+            tea:reqBody.tea,
+            rating:reqBody.rating,
+            comments:reqBody.comments
+        })
     return teas
 }
 
 connectToMongodb();
+
 app.get('/lastFive', async (req, res) => {
     if (isConnected) {
-        await addTea()
-        let data = await getATea()
-        console.log(data)
+        let data = await getLastFive()
+        res.send(data)
+    } else {
+        res.send("Mongo isn't connected")
+    }
+})
+app.get('/user/:username/myTeas', async (req, res) => {
+    if (isConnected) {
+        let data = await getMyTeas(req.params.username)
+        res.send(data)
+    } else {
+        res.send("Mongo isn't connected")
+    }
+})
+app.post('/newTea', async (req, res) => {
+    if (isConnected) {
+        let reqBody = req.body
+        console.log(1,reqBody)
+        let data = await addTea(reqBody)
         res.send(data)
     } else {
         res.send("Mongo isn't connected")
     }
 })
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+app.listen(3000, () => {
+  console.log('Example app listening on port 3000')
 })
