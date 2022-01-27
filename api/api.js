@@ -1,8 +1,10 @@
 const express = require('express')
-const app = express()
-const port = 3000
+const cors = require('cors')
 const MongoClient = require('mongodb').MongoClient;
 
+const port = 3000
+const app = express()
+app.use(cors())
 const uri = "mongodb://mongodb";
 var isConnected = false;
 var conn;
@@ -34,7 +36,7 @@ async function addTea() {
 }
 
 connectToMongodb();
-app.get('/', async (req, res) => {
+app.get('/lastFive', async (req, res) => {
     if (isConnected) {
         await addTea()
         let data = await getATea()
