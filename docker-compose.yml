@@ -1,0 +1,47 @@
+version: '3'
+services:
+
+  mongodb:
+    restart: unless-stopped
+    image : mongo
+    volumes:
+      - ./persistentstore:/data/db
+    ports:
+      - 27017:27017
+    networks:
+      leafnet:
+        ipv4_address: 172.29.0.1
+
+  # api:
+  #    restart: unless-stopped
+  #    build:
+  #      context: ./producer-block
+  #      dockerfile: Dockerfile-producer
+  #    ports:
+  #     - "3000"
+  #    depends_on:
+  #     - kafka
+  #    networks:
+  #      leafnet:
+  #       ipv4_address: 172.29.0.2
+
+  # frontend:
+  #    restart: unless-stopped
+  #    build:
+  #      context: ./frontend
+  #      dockerfile: Dockerfile-frontend
+  #    ports:
+  #     - "8080"
+  #    depends_on:
+  #     - api
+  #    networks:
+  #      leafnet:
+  #       ipv4_address: 172.29.0.3
+  
+networks:
+  leafnet:
+    ipam:
+      driver: default
+      config:
+      -
+        subnet: 172.29.0.0/16
