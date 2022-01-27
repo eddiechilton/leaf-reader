@@ -12,8 +12,6 @@ services:
       leafnet:
         ipv4_address: 172.29.0.2
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=eddie
-      - MONGO_INITDB_ROOT_PASSWORD=password
       - MONGO_INITDB_DATABASE=tea
 
   api:
@@ -29,18 +27,18 @@ services:
        leafnet:
         ipv4_address: 172.29.0.3
 
-  frontend:
-     restart: unless-stopped
-     build:
-       context: ./frontend
-       dockerfile: Dockerfile-frontend
-     ports:
-      - 8080:8080
-     depends_on:
-      - api
-     networks:
-       leafnet:
-        ipv4_address: 172.29.0.4
+  # frontend:
+  #    restart: unless-stopped
+  #    build:
+  #      context: ./frontend
+  #      dockerfile: Dockerfile-frontend
+  #    ports:
+  #     - 8080:8080
+  #    depends_on:
+  #     - api
+  #    networks:
+  #      leafnet:
+  #       ipv4_address: 172.29.0.4
   
 networks:
   leafnet:
