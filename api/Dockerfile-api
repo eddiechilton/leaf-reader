@@ -1,0 +1,10 @@
+
+FROM node:latest
+ADD package.json /tmp/package.json
+RUN cd /tmp && npm install
+RUN mkdir -p /code && cp -a /tmp/node_modules /code/
+RUN cd ..
+ADD  . /code
+WORKDIR ./code
+EXPOSE 3000
+CMD ["node", "api.js"]
