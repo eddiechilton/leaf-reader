@@ -2,6 +2,7 @@ const express = require('express')
 const cors = require('cors')
 const bodyParser= require('body-parser')
 const MongoClient = require('mongodb').MongoClient;
+var ObjectId = require('mongodb').ObjectID;
 
 const app = express()
 app.use(cors())
@@ -43,7 +44,20 @@ async function addTea(reqBody) {
 async function addReview(reqBody) {
     let obj = reqBody.tea;
     let obj2 = reqBody.review;
-    let teas = await conn.collection('teas').update(obj, { $push: {"reviews":obj2}})
+    let alreadyExists = await conn.collection('teas').findOne({'_id': new ObjectId(obj._id), 'reviews.user':obj2.user})
+    if (alreadyExists) {
+        return 'error'
+    } else {
+        let teas = await conn.collection('teas').updateOne({'_id': new ObjectId(obj._id)}, { $push: {"reviews": obj2}})
+        return teas
+    }
+}
+async function updateReview(reqBody) {
+    console.log(reqBody)
+    let obj = reqBody.tea;
+    let obj2 = reqBody.newComment;
+    let obj3 = reqBody.newRating;
+    let teas = await conn.collection('teas').updateOne({'_id': new ObjectId(obj._id), 'reviews.user':obj.selectedReview.user}, { $set: {'reviews.$.comments': obj2, 'reviews.$.rating': obj3}})
     return teas
 }
 
@@ -59,8 +73,20 @@ app.get('/teas/getAllTeas', async (req, res) => {
 })
 app.post('/teas/addReview', async (req, res) => {
     if (isConnected) {
-        console.log(req.body)
         let data = await addReview(req.body)
+        if (data == 'error'){
+        return res.status(400).send({
+            message: 'This is an error!'
+         });} else {
+             res.send(data)
+         }
+    } else {
+        res.send("Mongo isn't connected")
+    }
+})
+app.post('/teas/updateReview', async (req, res) => {
+    if (isConnected) {
+        let data = await updateReview(req.body)
         res.send(data)
     } else {
         res.send("Mongo isn't connected")
@@ -77,6 +103,14 @@ app.post('/teas/newTea', async (req, res) => {
 app.get('/user/:username/myTeas', async (req, res) => {
     if (isConnected) {
         let data = await getMyTeas(req.params.username)
+        res.send(data)
+    } else {
+        res.send("Mongo isn't connected")
+    }
+})
+app.get('/teas/kill', async (req, res) => {
+    if (isConnected) {
+        let data = await conn.collection('teas').deleteMany({})
         res.send(data)
     } else {
         res.send("Mongo isn't connected")

@@ -64,4 +64,12 @@ export default {
 .secondary-text{
   color: #E5E8B6
 }
+.panel{
+  color: #093824;
+  background-color: #BF4E30;
+  margin: 2vw;
+  padding: 1vw;
+  border: 3px solid #C6CCB2;
+  border-radius: 8px;
+}
 </style>

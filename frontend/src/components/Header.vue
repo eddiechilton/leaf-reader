@@ -1,15 +1,20 @@
 <template>
   <div class="header secondary">
-    <img class="home" src="../assets/leaf.png" @click="$emit('selectTab','Ticker')">
-      <div class="title secondary-text" @click="$emit('selectTab','Ticker')">
+    <img class="home-icon link" src="../assets/leaf.png" @click="$emit('selectTab','Ticker')">
+    <div class="home link-text secondary-text link" @click="$emit('selectTab','Ticker')">Home</div>
+
+    <img class="new-tea-icon link" src="../assets/plus.png" @click="$emit('selectTab','AddTea')">
+    <div class="new-tea link-text secondary-text link" @click="$emit('selectTab','AddTea')">Add Tea</div>
+
+    <img class="my-teas-icon link" src="../assets/list.png" @click="$emit('selectTab','MyTeas')">
+    <div class="my-teas link-text secondary-text link" @click="$emit('selectTab','MyTeas')">My Teas</div>
+
+
+
+      <div class="title secondary-text">
           Leaf Reader
           </div>
-      <div class="subtitle secondary-text" @click="$emit('selectTab','AddTea')">
-          Community Driven Tea Reviews
-          </div>
-    <button class="list" @click="$emit('selectTab','MyTeas')">
-        <img class="list-icon" src="../assets/list.png">
-        </button>
+
   </div>
 </template>
 
@@ -30,23 +35,63 @@ export default {
 </script>
 
 <style scoped>
-.home{
-    position: absolute;
-    top: 5vh;
-    transform: translateY(-50%);
-    left: 3.5vw;
-    width: 3vw;
+.link-text{
+  padding: .1vw;
 }
-.list{
+.link-text:hover{
+  background-color: #E5E8B6;
+  color: #093824;
+}
+.link{
+  cursor:grab
+}
+.home-icon{
     position: absolute;
-    top: 5vh;
-    transform: translateY(-50%);
-    right: 3vw;
+    top: 1vh;
+    transform: translateX(-50%);
+    left: 4vw;
+    width: 2.5vw;
+}
+.home{
+  font-size: 1vw;
+  position: absolute;
+  top: 7vh;
+  transform: translateX(-50%);
+  left: 4vw;
+
+}
+.new-tea-icon{
+  width: 2.5vw;
+  position: absolute;
+  top: 1vh;
+  transform: translateX(-50%);
+  left: 8vw;
+}
+.new-tea{
+    position: absolute;
+    top: 7vh;
+    transform: translateX(-50%);
+    left: 8vw;
+    font-size: 1vw;
+}
+.my-teas-icon{
+    position: absolute;
+    top: 1vh;
+    transform: translateX(-50%);
+    left: 12vw;
     background-color: transparent;
     border: none;
+    width: 2.5vw;
 }
-.list-icon{
-    width: 3vw;
+.my-teas{
+    position: absolute;
+    top: 7vh;
+    transform: translateX(-50%);
+    left: 12vw;
+    background-color: transparent;
+    border: none;
+    font-size: 1vw;
+
 }
 .header{
     position: absolute;
@@ -57,16 +102,12 @@ export default {
 }
 .title{
     position: absolute;
-    top: 5vh;
-    left: 7vw;
-    transform: translateY(-50%);
-    font-size: 2vw;
+    top: 2vh;
+    left: 50vw;
+    transform: translateX(-50%);
+    font-size: 2.7vw;
 }
 .subtitle{
-    position: absolute;
-    top: 5vh;
-    right: 9vw;
-    transform: translateY(-50%);
-    font-size: 2vw;
+    font-size: 1vw;
 }
 </style>
