@@ -2,6 +2,7 @@ const express = require('express')
 const cors = require('cors')
 const bodyParser= require('body-parser')
 const MongoClient = require('mongodb').MongoClient;
+var ObjectId = require('mongodb').ObjectID;
 
 const app = express()
 app.use(cors())
@@ -26,31 +27,74 @@ async function connectToMongodb() {
         )
 }
 
-async function getLastFive() {
-    let teas = await conn.collection('teas').find({}).limit(5).toArray()
+async function getAllTeas() {
+    let teas = await conn.collection('teas').find({}).toArray()
     return teas
 }
-async function getMyTeas(reqBody) {
-    let teas = await conn.collection('teas').find({user: reqBody.user}).toArray()
+async function getMyTeas(username) {
+    let teas = await conn.collection('teas').find({"reviews.user": username}).toArray()
     return teas
 }
 async function addTea(reqBody) {
-    console.log(2,reqBody)
-    let teas = await conn.collection('teas').insertOne(
-        {
-            user:reqBody.user,
-            tea:reqBody.tea,
-            rating:reqBody.rating,
-            comments:reqBody.comments
-        })
+    let obj = {...reqBody}
+    console.log(3,obj)
+    let teas = await conn.collection('teas').insertOne(obj)
+    return teas
+}
+async function addReview(reqBody) {
+    let obj = reqBody.tea;
+    let obj2 = reqBody.review;
+    let alreadyExists = await conn.collection('teas').findOne({'_id': new ObjectId(obj._id), 'reviews.user':obj2.user})
+    if (alreadyExists) {
+        return 'error'
+    } else {
+        let teas = await conn.collection('teas').updateOne({'_id': new ObjectId(obj._id)}, { $push: {"reviews": obj2}})
+        return teas
+    }
+}
+async function updateReview(reqBody) {
+    console.log(reqBody)
+    let obj = reqBody.tea;
+    let obj2 = reqBody.newComment;
+    let obj3 = reqBody.newRating;
+    let teas = await conn.collection('teas').updateOne({'_id': new ObjectId(obj._id), 'reviews.user':obj.selectedReview.user}, { $set: {'reviews.$.comments': obj2, 'reviews.$.rating': obj3}})
     return teas
 }
 
 connectToMongodb();
 
-app.get('/lastFive', async (req, res) => {
+app.get('/teas/getAllTeas', async (req, res) => {
     if (isConnected) {
-        let data = await getLastFive()
+        let data = await getAllTeas()
+        res.send(data)
+    } else {
+        res.send("Mongo isn't connected")
+    }
+})
+app.post('/teas/addReview', async (req, res) => {
+    if (isConnected) {
+        let data = await addReview(req.body)
+        if (data == 'error'){
+        return res.status(400).send({
+            message: 'This is an error!'
+         });} else {
+             res.send(data)
+         }
+    } else {
+        res.send("Mongo isn't connected")
+    }
+})
+app.post('/teas/updateReview', async (req, res) => {
+    if (isConnected) {
+        let data = await updateReview(req.body)
+        res.send(data)
+    } else {
+        res.send("Mongo isn't connected")
+    }
+})
+app.post('/teas/newTea', async (req, res) => {
+    if (isConnected) {
+        let data = await addTea(req.body)
         res.send(data)
     } else {
         res.send("Mongo isn't connected")
@@ -64,11 +108,9 @@ app.get('/user/:username/myTeas', async (req, res) => {
         res.send("Mongo isn't connected")
     }
 })
-app.post('/newTea', async (req, res) => {
+app.get('/teas/kill', async (req, res) => {
     if (isConnected) {
-        let reqBody = req.body
-        console.log(1,reqBody)
-        let data = await addTea(reqBody)
+        let data = await conn.collection('teas').deleteMany({})
         res.send(data)
     } else {
         res.send("Mongo isn't connected")
