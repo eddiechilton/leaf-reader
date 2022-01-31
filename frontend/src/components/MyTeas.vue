@@ -1,26 +1,32 @@
 <template>
-  <div v-if="myTeasLoaded">
-    These are my teas: {{myTeas}}
+  <div class="my-teas">
+    <input v-model="user">
+    <button @click="findTeas">FIND</button>
+    <div v-if="myTeasLoaded">These are my rated teas: 
+      {{myTeas}}
+    </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'Ticker',
+  name: 'MyTeas',
   async mounted() {
-    await this.getMyTeas();
+    let response = await this.findTeas();
+    this.myTeas = await response.json()
+    this.myTeasLoaded = true
   },
   data() {
     return {
       myTeas: undefined,
-      myTeasLoaded: false
+      myTeasLoaded: false,
+      user: 'eddie'
     }
   },
   methods: {
-    async getMyTeas() {
-      let response = await fetch('http://localhost:3000/user/eddie/myTeas')
-      this.myTeas = await response.json()
-      this.myTeasLoaded = true
+    async findTeas() {
+      let response = await fetch(`http://localhost:3000/user/${this.user}/myTeas`)
+      return response
     }
   },
 
@@ -29,5 +35,11 @@ export default {
 </script>
 
 <style scoped>
-
+.my-teas{
+    position: absolute;
+    top: 10vh;
+    left: 0;
+    height: 10vh;
+    width: 100vw;
+}
 </style>

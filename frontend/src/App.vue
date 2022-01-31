@@ -1,33 +1,67 @@
 <template>
-  <div>
-    <Ticker/>
-    <MyTeas />
-    <AddTea />
+  <div class="primary">
+    <Header v-on:selectTab="selectTab"/>
+    <component :is="selectedTab" />
+
   </div>
 </template>
 
 <script>
-import Ticker from './components/Ticker.vue'
-import MyTeas from './components/MyTeas.vue'
-import AddTea from './components/AddTea.vue'
+import Header from './components/Header.vue'
+import {defineAsyncComponent} from '@vue/runtime-core';
 
 export default {
   name: 'App',
+  data() {
+    return {
+      tab: 'Ticker'
+    }
+  },
   components: {
-    Ticker,
-    MyTeas,
-    AddTea
+    Header
+  },
+  computed: {
+    selectedTab() {
+      console.log(this.tab)
+      return defineAsyncComponent(() => import (`@/components/${this.tab}.vue`));
+    }
+  },
+  methods: {
+    selectTab(newTab) {
+      this.tab = newTab
+    }
   }
 }
 </script>
 
 <style>
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  position: absolute;
+  top: 0;
+  left:0;
+  font-family:Arial, Helvetica, sans-serif; 
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
+  margin: 0;
+  width: 100vw;
+  height: 100vh;
+}
+.primary {
+  background-color: #586994;
+    width: 100vw;
+  height: 100vh;
+}
+.text {
+  color: #7D869C
+}
+.highlighted-text{
+  color: #B4C4AE
+}
+.secondary{
+  background-color: #093824;
+}
+.secondary-text{
+  color: #E5E8B6
 }
 </style>
